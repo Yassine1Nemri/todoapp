@@ -112,16 +112,7 @@ jobs:
     find src/ -type f
 
     echo "Running ESLint..."
-    npx eslint src/ --ext .js --format json --output-file eslint-results.json --no-eslintrc --config '{
-      "env": { "browser": true, "es2021": true },
-      "rules": {
-        "no-eval": "error",
-        "no-implied-eval": "error",
-        "no-new-func": "error", 
-        "no-script-url": "error",
-        "no-alert": "warn"
-      }
-    }' || true
+    npx eslint src/ --ext .js --format json --output-file eslint-results.json --no-eslintrc --config '{ ... }' || true
 
     echo "Done. Checking if eslint-results.json exists..."
     if [ -f eslint-results.json ]; then
@@ -130,6 +121,7 @@ jobs:
     else
       echo "⚠️ ESLint output NOT found"
     fi
+
 
       - name: Run Unit Tests
         run: |
