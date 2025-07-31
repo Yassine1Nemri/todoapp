@@ -60,7 +60,7 @@ jobs:
 
          echo "🔍 Running OSV-Scanner..."
          ./osv-scanner --recursive --skip-git --format json --output osv-results.json ./
-  continue-on-error: true
+         continue-on-error: true
 
 
       - name: Check for hardcoded secrets
