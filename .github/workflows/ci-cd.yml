@@ -6,6 +6,10 @@ on:
   pull_request:
     branches: [ main ]
 
+permissions:
+  contents: read
+  security-events: write
+
 env:
   NODE_VERSION: '18'
   REGISTRY: ghcr.io
@@ -182,7 +186,7 @@ jobs:
         uses: github/codeql-action/upload-sarif@v3
         with:
           sarif_file: 'trivy-results.sarif'
-        if: always()
+        if: github.event_name == 'push'
 
       - name: Scan with Docker Scout (if available)
         run: |
