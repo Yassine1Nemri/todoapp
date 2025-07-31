@@ -53,8 +53,11 @@ jobs:
       - name: OSV Scanner for Vulnerabilities
         run: |
           echo "📥 Downloading OSV-Scanner..."
-          curl -sSfL https://github.com/google/osv-scanner/releases/download/v1.7.4/osv-scanner-linux-amd64 -o osv-scanner
-          chmod +x osv-scanner
+          curl -sSfL https://github.com/google/osv-scanner/releases/download/v1.7.4/osv-scanner_1.7.4_linux_amd64.tar.gz -o osv-scanner.tar.gz
+
+          echo "📦 Extracting..."
+          tar -xzf osv-scanner.tar.gz
+
           echo "🔍 Running OSV-Scanner..."
           ./osv-scanner --recursive --skip-git --format json --output osv-results.json ./
         continue-on-error: true
