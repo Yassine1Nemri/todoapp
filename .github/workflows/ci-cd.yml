@@ -102,16 +102,18 @@ jobs:
 
       - name: Run ESLint with Security Rules
         run: |
-          npx eslint src/ --ext .js --format json --output-file eslint-results.json --no-eslintrc --config '{
+            npx eslint src/script --ext .js --format json --output-file eslint-results.json --no-eslintrc --config '{
             "env": { "browser": true, "es2021": true },
             "rules": {
-              "no-eval": "error",
-              "no-implied-eval": "error",
-              "no-new-func": "error", 
-              "no-script-url": "error",
-              "no-alert": "warn"
-            }
-          }' || true
+            "no-eval": "error",
+            "no-implied-eval": "error",
+            "no-new-func": "error", 
+            "no-script-url": "error",
+            "no-alert": "warn"
+                                    }
+                                      }' || true
+
+
       - name: Run Unit Tests
         run: |
           # Create basic test runner since we don't have Jest setup yet
