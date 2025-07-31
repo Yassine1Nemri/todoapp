@@ -216,8 +216,8 @@ jobs:
       - name: Run final security check
         run: |
           echo "Running final security validation..."
-          chmod +x security/free-security-scan.sh
-          ./security/free-security-scan.sh || echo "Security scan completed with warnings"
+          chmod +x security/security-scan.sh
+          ./security/security-scan.sh || echo "Security scan completed with warnings"
 
       - name: Build application
         run: |
