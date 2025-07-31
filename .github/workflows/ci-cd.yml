@@ -180,14 +180,11 @@ jobs:
           output: 'trivy-results.sarif'
 
       - name: Upload Trivy scan results to GitHub Security tab
-          permissions:
-          contents: read
-        security-events: write
-
+        if: github.event_name == 'push'
         uses: github/codeql-action/upload-sarif@v3
         with:
-          sarif_file: 'trivy-results.sarif'
-        if: github.event_name == 'push'
+              sarif_file: 'trivy-results.sarif'
+
 
       - name: Scan with Docker Scout (if available)
         run: |
