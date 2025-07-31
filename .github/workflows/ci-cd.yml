@@ -55,12 +55,16 @@ jobs:
       - name: OSV Scanner for Vulnerabilities
         run: |
           echo "📥 Downloading OSV-Scanner..."
-          curl -sSfL https://github.com/google/osv-scanner/releases/download/v1.7.4/osv-scanner-linux-amd64 -o osv-scanner
-          chmod +x osv-scanner
+          curl -sSfL https://github.com/google/osv-scanner/releases/download/v1.7.4/osv-scanner_1.7.4_linux_amd64.tar.gz -o osv-scanner.tar.gz
+
+          echo "📦 Extracting..."
+          tar -xzf osv-scanner.tar.gz
 
           echo "🔍 Running OSV-Scanner..."
           ./osv-scanner --recursive --skip-git --format json --output osv-results.json ./
-        continue-on-error: true
+
+  continue-on-error: true
+
 
       - name: Check for hardcoded secrets
         run: |
@@ -103,17 +107,29 @@ jobs:
         run: npm ci
 
       - name: Run ESLint with Security Rules
-        run: |
-          npx eslint src/ --ext .js --format json --output-file eslint-results.json --no-eslintrc --config '{
-            "env": { "browser": true, "es2021": true },
-            "rules": {
-              "no-eval": "error",
-              "no-implied-eval": "error",
-              "no-new-func": "error", 
-              "no-script-url": "error",
-              "no-alert": "warn"
-            }
-          }' || true
+  run: |
+    echo "Listing files..."
+    find src/ -type f
+
+    echo "Running ESLint..."
+    npx eslint src/ --ext .js --format json --output-file eslint-results.json --no-eslintrc --config '{
+      "env": { "browser": true, "es2021": true },
+      "rules": {
+        "no-eval": "error",
+        "no-implied-eval": "error",
+        "no-new-func": "error", 
+        "no-script-url": "error",
+        "no-alert": "warn"
+      }
+    }' || true
+
+    echo "Done. Checking if eslint-results.json exists..."
+    if [ -f eslint-results.json ]; then
+      echo "✅ ESLint output found"
+      cat eslint-results.json
+    else
+      echo "⚠️ ESLint output NOT found"
+    fi
 
       - name: Run Unit Tests
         run: |
@@ -233,16 +249,19 @@ jobs:
           registry: ${{ env.REGISTRY }}
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-
+      - name: Set lowercase repository name
+          id: repo
+          run: echo "REPO_LOWERCASE=${GITHUB_REPOSITORY,,}" >> $GITHUB_ENV
+  
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
         with:
-          context: .
-          file: ./docker/Dockerfile
-          push: true
-          tags: |
-            ${{ env.REGISTRY }}/${{ github.repository }}:latest
-            ${{ env.REGISTRY }}/${{ github.repository }}:${{ github.sha }}
+        context: .
+        file: ./docker/Dockerfile
+        push: true
+        tags: |
+                  ${{ env.REGISTRY }}/${{ env.REPO_LOWERCASE }}:latest
+                  ${{ env.REGISTRY }}/${{ env.REPO_LOWERCASE }}:${{ github.sha }}
 
       - name: Deploy to staging
         run: |
