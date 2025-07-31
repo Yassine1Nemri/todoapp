@@ -50,10 +50,12 @@ jobs:
             p/owasp-top-ten
         continue-on-error: true
 
-      - name: Run OSV Scanner using Docker
-        run: |
-            docker run --rm -v ${{ github.workspace }}:/src google/osv-scanner:latest --recursive --skip-git --format json --output /src/osv-results.json /src
-            continue-on-error: true
+      - name: Run OSV Scanner
+        uses: google/osv-scanner-action@v1
+        with:
+          format: json
+          output: osv-results.json
+          continue-on-error: true
 
       - name: Check for hardcoded secrets
         run: |
