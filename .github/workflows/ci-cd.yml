@@ -50,18 +50,10 @@ jobs:
             p/owasp-top-ten
         continue-on-error: true
 
-      - name: OSV Scanner for Vulnerabilities
+      - name: Run OSV Scanner using Docker
         run: |
-         echo "📥 Downloading OSV-Scanner..."
-         curl -sSfL https://github.com/google/osv-scanner/releases/download/v1.7.4/osv-scanner_1.7.4_linux_amd64 -o osv-scanner
-
-         echo "✅ Making it executable..."
-         chmod +x osv-scanner
-
-         echo "🔍 Running OSV-Scanner..."
-         ./osv-scanner --recursive --skip-git --format json --output osv-results.json ./
-         continue-on-error: true
-
+            docker run --rm -v ${{ github.workspace }}:/src google/osv-scanner:latest --recursive --skip-git --format json --output /src/osv-results.json /src
+            continue-on-error: true
 
       - name: Check for hardcoded secrets
         run: |
